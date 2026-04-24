@@ -21,14 +21,31 @@ var (
 	})
 )
 
+type TemperatureSetter interface {
+	Set(float64)
+}
+
+func UpdateTemperature(setter TemperatureSetter, currentTemp *float64) {
+	delta := (rand.Float64() - 0.5)
+	*currentTemp += delta
+	setter.Set(*currentTemp)
+}
+
+type CounterIncrementer interface {
+	Inc()
+}
+
+func IncrementReadings(counter CounterIncrementer) {
+	counter.Inc()
+}
+
 func main() {
 	go func() {
 		currentTemp := 25.0
+
 		for {
-			// Simulate a Random Walk
-			currentTemp += (rand.Float64() - 0.5)
-			ambientTemp.Set(currentTemp)
-			readingsTotal.Inc()
+			UpdateTemperature(ambientTemp, &currentTemp)
+			IncrementReadings(readingsTotal)
 			
 			time.Sleep(2 * time.Second)
 		}

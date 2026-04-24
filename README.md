@@ -11,7 +11,8 @@ Run the following command in the root of the project to generate the `go.mod` an
 docker run --rm -v ./app:/app -w /app golang:1.23-alpine sh -c "go mod init cloudmetrics-app && go mod tidy"
 ```
 
-Build the optimized container using the multi-stage Dockerfile:
+Build the optimized container using the multi-stage Dockerfile, which also
+includes unit tests:
 
 ```bash
 docker build -t cloudmetrics-app .
