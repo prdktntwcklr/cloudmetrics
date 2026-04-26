@@ -11,7 +11,7 @@ RUN go test -v ./...
 FROM tester AS builder
 RUN go build -o main .
 
-FROM alpine:latest  
+FROM alpine:3.22.4  
 WORKDIR /root
 COPY --from=builder /workdir/app/main .
 EXPOSE 8080

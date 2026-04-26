@@ -10,8 +10,14 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-    - name: checkout repository
+    - name: Checkout repository
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+    - name: Lint Dockerfile
+      uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
+      with:
+        dockerfile: Dockerfile
+    
     - name: Extract Docker metadata
       id: meta
       uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
@@ -22,6 +28,7 @@ jobs:
           type=sha
           # Tag with 'latest' only on the main branch
           type=raw,value=latest,enable={{is_default_branch}}
+
     - name: Build the Docker image
       uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
       with:
