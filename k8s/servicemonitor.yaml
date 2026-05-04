@@ -2,14 +2,10 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: cloudmetrics-monitoring
-  namespace: monitoring
   labels:
     # This label must match your Prometheus installation's selector
     release: prometheus
 spec:
-  namespaceSelector:
-    matchNames:
-      - default
   selector:
     matchLabels:
       app: cloudmetrics

@@ -43,11 +43,6 @@ To deploy the application to your local Kubernetes cluster, simply run:
 kubectl apply -f k8s/
 ```
 
-The manifests in the `k8s/` directory use explicit namespaces. Running the
-`apply` command will automatically route the application and service to the `default`
-namespace, while the `ServiceMonitor` is routed to the `monitoring` namespace to
-ensure it is discovered by the Prometheus Operator.
-
 ## Accessing Data
 
 1. **Application Metrics**: Once the `EXTERNAL-IP` of the `cloudmetrics-service`
