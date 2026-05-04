@@ -39,6 +39,10 @@ func IncrementReadings(counter CounterIncrementer) {
 	counter.Inc()
 }
 
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "index.html")
+}
+
 func main() {
 	go func() {
 		currentTemp := 25.0
@@ -51,6 +55,7 @@ func main() {
 		}
 	}()
 
+	http.HandleFunc("/", IndexHandler)
 	http.Handle("/metrics", promhttp.Handler())
 
 	println("CloudMetrics server starting on :8080...")
