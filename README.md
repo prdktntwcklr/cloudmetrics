@@ -73,6 +73,7 @@ To stop and remove all Kubernetes resources:
 
 ```bash
 kubectl delete -f k8s/
-helm uninstall prometheus --namespace monitoring
-kubectl delete namespace monitoring
 ```
+
+For details on how to uninstall the `kube-prometheus-stack` chart, refer to the
+[official documentation](https://github.com/prometheus-community/helm-charts/tree/556bfa39ea386b9d261b5ca49a9dc62f112ec78f/charts/kube-prometheus-stack#uninstall-helm-chart).

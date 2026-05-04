@@ -14,5 +14,6 @@ RUN go build -o main .
 FROM alpine:3.22.4  
 WORKDIR /root
 COPY --from=builder /workdir/app/main .
+COPY ./app/index.html .
 EXPOSE 8080
 CMD ["./main"]
