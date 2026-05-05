@@ -17,7 +17,7 @@ spec:
       containers:
         - name: cloudmetrics-app
           image: cloudmetrics:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           resources:
