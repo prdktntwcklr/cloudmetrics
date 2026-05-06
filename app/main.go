@@ -1,9 +1,10 @@
 package main
 
 import (
+	"log"
+	"math/rand"
 	"net/http"
 	"time"
-	"math/rand"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -46,6 +47,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	go func() {
 		currentTemp := 25.0
+		log.Println("Starting sensor simulation loop...")
 
 		for {
 			UpdateTemperature(ambientTemp, &currentTemp)
@@ -55,9 +57,20 @@ func main() {
 		}
 	}()
 
-	http.HandleFunc("/", IndexHandler)
-	http.Handle("/metrics", promhttp.Handler())
+	mux := http.NewServeMux()
 
-	println("CloudMetrics server starting on :8080...")
-	http.ListenAndServe(":8080", nil)
+	mux.HandleFunc("/", IndexHandler)
+	mux.Handle("/metrics", promhttp.Handler())
+	
+	loggingMux := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// TODO: Consider excluding "/metrics" from logs to reduce noise in production
+        log.Printf("Request: %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+        mux.ServeHTTP(w, r)
+    })
+	
+	port := "8080"
+	address := ":" + port
+
+	log.Printf("Starting server on %s", address)
+	log.Fatal(http.ListenAndServe(address, loggingMux))
 }
