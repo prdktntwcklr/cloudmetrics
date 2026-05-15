@@ -58,6 +58,23 @@ first port-forward the service:
     ensure the `cloudmetrics-monitoring` target is `UP` (might take some time to
     appear).
 
+3. **Grafana UI**: To access the Grafana UI,
+first port-forward it:
+
+    ```bash
+    kubectl port-forward svc/prometheus-grafana -n monitoring 3000:80
+    ```
+
+    Next, retrieve the password (`base64` encoded) using the following command:
+
+    ```bash
+    kubectl get secret --namespace monitoring prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+    ```
+
+    Open http://localhost:3000/ and log in using the username `admin` and
+    password decoded above. You should be able to open the `Cloudmetrics`
+    dashboard to see the metrics being displayed.
+
 ## Development & Testing
 
 If you add new Go packages, update the `go.mod` and `go.sum` files using a
