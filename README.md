@@ -58,6 +58,8 @@ first port-forward the service:
     ensure the `cloudmetrics-monitoring` target is `UP` (might take some time to
     appear).
 
+    ![Prometheus UI](images/prometheus.png)
+
 3. **Grafana UI**: To access the Grafana UI,
 first port-forward it:
 
@@ -74,6 +76,8 @@ first port-forward it:
     Open http://localhost:3000/ and log in using the username `admin` and
     password decoded above. You should be able to open the `Cloudmetrics`
     dashboard to see the metrics being displayed.
+
+    ![Grafana UI](images/grafana.png)
 
 ## Development & Testing
 
