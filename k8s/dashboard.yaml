@@ -4,6 +4,10 @@ metadata:
   name: cloudmetrics-dashboard
   labels:
     grafana_dashboard: "1"
+# NOTE: Dashboards deployed via this ConfigMap are read-only in Grafana.
+# You cannot save changes directly through the UI. 
+# To export the dashboard as JSON, first save it as a copy in Grafana, 
+# then export that copy.
 data:
   cloudmetrics-dashboard.json: |-
     {
@@ -191,25 +195,12 @@ data:
               },
               "vizConfig": {
                 "kind": "VizConfig",
-                "group": "timeseries",
+                "group": "table",
                 "version": "13.0.1",
                 "spec": {
                   "options": {
-                    "annotations": {
-                      "clustering": -1,
-                      "multiLane": false
-                    },
-                    "legend": {
-                      "calcs": [],
-                      "displayMode": "list",
-                      "placement": "bottom",
-                      "showLegend": true
-                    },
-                    "tooltip": {
-                      "hideZeros": false,
-                      "mode": "single",
-                      "sort": "none"
-                    }
+                    "cellHeight": "sm",
+                    "showHeader": true
                   },
                   "fieldConfig": {
                     "defaults": {
@@ -227,41 +218,17 @@ data:
                         ]
                       },
                       "color": {
-                        "mode": "palette-classic"
+                        "mode": "thresholds"
                       },
                       "custom": {
-                        "axisBorderShow": false,
-                        "axisCenteredZero": false,
-                        "axisColorMode": "text",
-                        "axisLabel": "",
-                        "axisPlacement": "auto",
-                        "barAlignment": 0,
-                        "barWidthFactor": 0.6,
-                        "drawStyle": "line",
-                        "fillOpacity": 0,
-                        "gradientMode": "none",
-                        "hideFrom": {
-                          "legend": false,
-                          "tooltip": false,
-                          "viz": false
+                        "align": "auto",
+                        "cellOptions": {
+                          "type": "auto"
                         },
-                        "insertNulls": false,
-                        "lineInterpolation": "linear",
-                        "lineWidth": 1,
-                        "pointSize": 5,
-                        "scaleDistribution": {
-                          "type": "linear"
+                        "footer": {
+                          "reducers": []
                         },
-                        "showPoints": "auto",
-                        "showValues": false,
-                        "spanNulls": false,
-                        "stacking": {
-                          "group": "A",
-                          "mode": "none"
-                        },
-                        "thresholdsStyle": {
-                          "mode": "off"
-                        }
+                        "inspect": false
                       }
                     },
                     "overrides": []
@@ -307,7 +274,7 @@ data:
         ],
         "timeSettings": {
           "timezone": "browser",
-          "from": "now-6h",
+          "from": "now-1h",
           "to": "now",
           "autoRefresh": "",
           "autoRefreshIntervals": [
