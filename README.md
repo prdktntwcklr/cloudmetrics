@@ -60,7 +60,33 @@ first port-forward the service:
 
     ![Prometheus UI](images/prometheus.png)
 
-3. **Grafana UI**: To access the Grafana UI,
+    You can also inspect the logs to see the endpoint being scraped:
+
+    ```bash
+    $ kubectl logs -l app=cloudmetrics                    
+    2026/05/16 02:15:27 Request: GET /metrics from <pod-ip>:48862
+    2026/05/16 02:15:43 Request: GET /metrics from <pod-ip>:48862
+    2026/05/16 02:15:58 Request: GET /metrics from <pod-ip>:48862
+    2026/05/16 02:16:14 Request: GET /metrics from <pod-ip>:48862
+    2026/05/16 02:16:29 Request: GET /metrics from <pod-ip>:48862
+    2026/05/16 02:16:45 Request: GET /metrics from <pod-ip>:48862
+    2026/05/16 02:17:00 Request: GET /metrics from <pod-ip>:48862
+    2026/05/16 02:17:16 Request: GET /metrics from <pod-ip>:48862
+    2026/05/16 02:17:31 Request: GET /metrics from <pod-ip>:48862
+    2026/05/16 02:17:47 Request: GET /metrics from <pod-ip>:48862
+    2026/05/16 02:15:30 Request: GET /metrics from <pod-ip>:42504
+    2026/05/16 02:15:45 Request: GET /metrics from <pod-ip>:42504
+    2026/05/16 02:16:01 Request: GET /metrics from <pod-ip>:42504
+    2026/05/16 02:16:16 Request: GET /metrics from <pod-ip>:42504
+    2026/05/16 02:16:32 Request: GET /metrics from <pod-ip>:42504
+    2026/05/16 02:16:47 Request: GET /metrics from <pod-ip>:42504
+    2026/05/16 02:17:03 Request: GET /metrics from <pod-ip>:42504
+    2026/05/16 02:17:18 Request: GET /metrics from <pod-ip>:42504
+    2026/05/16 02:17:34 Request: GET /metrics from <pod-ip>:42504
+    2026/05/16 02:17:49 Request: GET /metrics from <pod-ip>:42504
+    ```
+
+3. **Grafana UI**: To access the Grafana UI, 
 first port-forward it:
 
     ```bash
