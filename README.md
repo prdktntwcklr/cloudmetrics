@@ -19,11 +19,18 @@ Prometheus Operator to be installed in your cluster:
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 
+# Create a hardcoded secret to log into Grafana (not for production!)
+kubectl create secret generic grafana-admin-secret \
+  -n monitoring \
+  --from-literal=admin-user=admin \
+  --from-literal=admin-password='supersecurepassword'
+
 # Install the kube-prometheus-stack inside the 'monitoring' namespace
 # This installs Prometheus, Grafana, and the required Custom Resource Definitions (CRDs)
 helm install prometheus prometheus-community/kube-prometheus-stack \
   --create-namespace \
-  --namespace monitoring
+  --namespace monitoring \
+  -f values.yaml
 ```
 
 ## Local Build
@@ -51,7 +58,7 @@ appears, visit http://localhost:8080/metrics to see the raw Prometheus format.
 first port-forward the service:
 
     ```bash
-    kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090
+    kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090:9090
     ```
 
     Open http://localhost:9090/, navigate to `Status > Target health` and
@@ -93,15 +100,9 @@ first port-forward it:
     kubectl port-forward svc/prometheus-grafana -n monitoring 3000:80
     ```
 
-    Next, retrieve the password (`base64` encoded) using the following command:
-
-    ```bash
-    kubectl get secret --namespace monitoring prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-    ```
-
-    Open http://localhost:3000/ and log in using the username `admin` and
-    password decoded above. You should be able to open the `Cloudmetrics`
-    dashboard to see the metrics being displayed.
+    Open http://localhost:3000/ and log in using the username and password you
+    stored in the Kubernetes secret above. You should be able to open the
+    `Cloudmetrics` dashboard to see the metrics being displayed.
 
     ![Grafana UI](images/grafana.png)
 
