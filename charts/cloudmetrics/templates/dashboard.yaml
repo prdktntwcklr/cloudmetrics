@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cloudmetrics-dashboard
+  name: {{ .Release.Name }}-dashboard
   labels:
     grafana_dashboard: "1"
 # NOTE: Dashboards deployed via this ConfigMap are read-only in Grafana.
@@ -9,7 +9,7 @@ metadata:
 # To export the dashboard as JSON, first save it as a copy in Grafana, 
 # then export that copy.
 data:
-  cloudmetrics-dashboard.json: |-
+  {{ .Release.Name }}-dashboard.json: |-
     {
       "apiVersion": "dashboard.grafana.app/v2",
       "kind": "Dashboard",
@@ -270,7 +270,8 @@ data:
         "liveNow": false,
         "preload": false,
         "tags": [
-          "cloudmetrics"
+          "cloudmetrics",
+          "{{ .Release.Name }}"
         ],
         "timeSettings": {
           "timezone": "browser",
@@ -292,7 +293,7 @@ data:
           "hideTimepicker": false,
           "fiscalYearStartMonth": 0
         },
-        "title": "Cloudmetrics",
+        "title": "{{ .Release.Name | title }} CloudMetrics",
         "variables": [],
         "preferences": {
           "layout": {

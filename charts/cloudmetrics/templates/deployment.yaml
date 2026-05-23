@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cloudmetrics-deployment
+  name: {{ .Release.Name }}-deployment
   labels:
-    app: cloudmetrics
+    app: {{ .Release.Name }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicaCount | default 1 }}
   selector:
     matchLabels:
-      app: cloudmetrics
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: cloudmetrics
+        app: {{ .Release.Name }}
     spec:
       containers:
         - name: cloudmetrics-app
-          image: cloudmetrics:latest
-          imagePullPolicy: Always
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           ports:
             - containerPort: 8080
           resources:

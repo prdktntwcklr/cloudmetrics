@@ -1,14 +1,14 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: cloudmetrics-monitoring
+  name: {{ .Release.Name }}-monitoring
   labels:
     # This label must match your Prometheus installation's selector
-    release: prometheus
+    release: {{ .Values.prometheusReleaseName | default "prometheus" }}
 spec:
   selector:
     matchLabels:
-      app: cloudmetrics
+      app: {{ .Release.Name }}
   endpoints:
     - port: app-metrics
       interval: 15s
