@@ -30,7 +30,7 @@ kubectl create secret generic grafana-admin-secret \
 helm install prometheus prometheus-community/kube-prometheus-stack \
   --create-namespace \
   --namespace monitoring \
-  -f values.yaml
+  -f monitoring-values.yaml
 ```
 
 ## Local Build
@@ -44,10 +44,10 @@ docker build -t cloudmetrics:latest .
 
 ## Kubernetes Deployment
 
-To deploy the application to your local Kubernetes cluster, simply run:
+To deploy the application to your local Kubernetes cluster, use Helm:
 
 ```bash
-kubectl apply -f k8s/
+helm install dev-release charts/cloudmetrics
 ```
 
 ## Accessing Data
@@ -70,27 +70,13 @@ first port-forward the service:
     You can also inspect the logs to see the endpoint being scraped:
 
     ```bash
-    $ kubectl logs -l app=cloudmetrics                    
+    $ kubectl logs -l app=dev-release                    
     2026/05/16 02:15:27 Request: GET /metrics from <pod-ip>:48862
     2026/05/16 02:15:43 Request: GET /metrics from <pod-ip>:48862
-    2026/05/16 02:15:58 Request: GET /metrics from <pod-ip>:48862
-    2026/05/16 02:16:14 Request: GET /metrics from <pod-ip>:48862
-    2026/05/16 02:16:29 Request: GET /metrics from <pod-ip>:48862
-    2026/05/16 02:16:45 Request: GET /metrics from <pod-ip>:48862
-    2026/05/16 02:17:00 Request: GET /metrics from <pod-ip>:48862
-    2026/05/16 02:17:16 Request: GET /metrics from <pod-ip>:48862
-    2026/05/16 02:17:31 Request: GET /metrics from <pod-ip>:48862
-    2026/05/16 02:17:47 Request: GET /metrics from <pod-ip>:48862
+    ...
     2026/05/16 02:15:30 Request: GET /metrics from <pod-ip>:42504
     2026/05/16 02:15:45 Request: GET /metrics from <pod-ip>:42504
-    2026/05/16 02:16:01 Request: GET /metrics from <pod-ip>:42504
-    2026/05/16 02:16:16 Request: GET /metrics from <pod-ip>:42504
-    2026/05/16 02:16:32 Request: GET /metrics from <pod-ip>:42504
-    2026/05/16 02:16:47 Request: GET /metrics from <pod-ip>:42504
-    2026/05/16 02:17:03 Request: GET /metrics from <pod-ip>:42504
-    2026/05/16 02:17:18 Request: GET /metrics from <pod-ip>:42504
-    2026/05/16 02:17:34 Request: GET /metrics from <pod-ip>:42504
-    2026/05/16 02:17:49 Request: GET /metrics from <pod-ip>:42504
+    ...
     ```
 
 3. **Grafana UI**: To access the Grafana UI, 
@@ -117,10 +103,10 @@ docker run --rm -v ./app:/app -w /app golang:1.23-alpine sh -c "go mod init clou
 
 ## Cleanup
 
-To stop and remove all Kubernetes resources:
+To stop and remove the application and its associated resources:
 
 ```bash
-kubectl delete -f k8s/
+helm uninstall dev-release
 ```
 
 For details on how to uninstall the `kube-prometheus-stack` chart, refer to the

@@ -1,0 +1,6 @@
+replicaCount: 2
+
+image:
+  repository: cloudmetrics
+  tag: latest
+  pullPolicy: Always

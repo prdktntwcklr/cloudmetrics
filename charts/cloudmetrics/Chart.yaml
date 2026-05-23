@@ -1,0 +1,7 @@
+apiVersion: v2
+name: cloudmetrics
+description: Helm chart for the CloudMetrics application
+type: application
+version: 0.1.0
+appVersion: "latest" # TODO: change for production
+icon: https://raw.githubusercontent.com/cncf/artwork/refs/heads/main/other/cncf/icon/color/cncf-icon-color.svg
