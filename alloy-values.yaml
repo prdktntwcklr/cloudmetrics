@@ -78,16 +78,6 @@ alloy:
       // loki.source.kubernetes tails logs from Kubernetes containers using the Kubernetes API.
       loki.source.kubernetes "pod_logs" {
         targets    = discovery.relabel.pod_logs.output
-        forward_to = [loki.process.pod_logs.receiver]
-      }
-
-      loki.process "pod_logs" {
-        stage.static_labels {
-            values = {
-              cluster = "production",
-            }
-        }
-
         forward_to = [loki.write.loki_gateway.receiver]
       }
 
