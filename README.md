@@ -17,6 +17,8 @@ Prometheus Operator to be installed in your cluster:
 ```bash
 # Add the prometheus-community helm repo
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana-community https://grafana-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
 
 # Create a hardcoded secret to log into Grafana (not for production!)
@@ -30,7 +32,17 @@ kubectl create secret generic grafana-admin-secret \
 helm install prometheus prometheus-community/kube-prometheus-stack \
   --create-namespace \
   --namespace monitoring \
-  -f monitoring-values.yaml
+  -f kube-prometheus-stack-values.yaml
+
+# Install Loki for log aggregation
+helm install loki grafana-community/loki \
+  --namespace monitoring \
+  -f loki-values.yaml
+
+# Install Alloy to gather and send logs to Loki
+helm install alloy grafana/alloy \
+  --namespace monitoring \
+  -f alloy-values.yaml
 ```
 
 ## Local Build
@@ -47,50 +59,29 @@ docker build -t cloudmetrics:latest .
 To deploy the application to your local Kubernetes cluster, use Helm:
 
 ```bash
-helm install dev-release charts/cloudmetrics
+helm install cloudmetrics-dev charts/cloudmetrics
 ```
 
 ## Accessing Data
 
 1. **Application Metrics**: Once the `EXTERNAL-IP` of the `cloudmetrics-service`
 appears, visit http://localhost:8080/metrics to see the raw Prometheus format.
-2. **Prometheus UI**: To verify Prometheus is successfully scraping the pods,
-first port-forward the service:
 
-    ```bash
-    kubectl port-forward svc/prometheus-kube-prometheus-prometheus -n monitoring 9090:9090
-    ```
-
-    Open http://localhost:9090/, navigate to `Status > Target health` and
-    ensure the `cloudmetrics-monitoring` target is `UP` (might take some time to
-    appear).
-
-    ![Prometheus UI](images/prometheus.png)
-
-    You can also inspect the logs to see the endpoint being scraped:
-
-    ```bash
-    $ kubectl logs -l app=dev-release                    
-    2026/05/16 02:15:27 Request: GET /metrics from <pod-ip>:48862
-    2026/05/16 02:15:43 Request: GET /metrics from <pod-ip>:48862
-    ...
-    2026/05/16 02:15:30 Request: GET /metrics from <pod-ip>:42504
-    2026/05/16 02:15:45 Request: GET /metrics from <pod-ip>:42504
-    ...
-    ```
-
-3. **Grafana UI**: To access the Grafana UI, 
-first port-forward it:
+2. **Grafana UI**: To access the Grafana UI, first port-forward it:
 
     ```bash
     kubectl port-forward svc/prometheus-grafana -n monitoring 3000:80
     ```
 
-    Open http://localhost:3000/ and log in using the username and password you
-    stored in the Kubernetes secret above. You should be able to open the
-    `Cloudmetrics` dashboard to see the metrics being displayed.
+    **Metrics**: Open http://localhost:3000/ and log in using the username and
+    password you stored in the Kubernetes secret above. You should be able to
+    open the `Cloudmetrics` dashboard to see the metrics being displayed.
 
     ![Grafana UI](images/grafana.png)
+
+    **Logs**: Go to `Explore`, select the `Loki` data source, and run: `{service_name="cloudmetrics-app"}`.
+
+    ![Grafana Logs](images/logs.png)
 
 ## Development & Testing
 
@@ -106,7 +97,7 @@ docker run --rm -v ./app:/app -w /app golang:1.23-alpine sh -c "go mod init clou
 To stop and remove the application and its associated resources:
 
 ```bash
-helm uninstall dev-release
+helm uninstall cloudmetrics-dev
 ```
 
 For details on how to uninstall the `kube-prometheus-stack` chart, refer to the
