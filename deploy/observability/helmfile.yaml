@@ -15,14 +15,6 @@ releases:
     createNamespace: true
     values:
       - kube-prometheus-stack-values.yaml
-    # Handling the admin secret via Helm values instead of manual kubectl
-    set:
-      - name: grafana.admin.existingSecret
-        value: "grafana-admin-secret"
-      - name: grafana.admin.userKey
-        value: "admin-user"
-      - name: grafana.admin.passwordKey
-        value: "admin-password"
 
   # 2. Loki for log aggregation
   - name: loki
