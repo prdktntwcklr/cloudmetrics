@@ -17,6 +17,8 @@ Prometheus Operator to be installed in your cluster:
 ```bash
 # Add the prometheus-community helm repo
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana-community https://grafana-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
 
 # Create a hardcoded secret to log into Grafana (not for production!)
@@ -30,7 +32,17 @@ kubectl create secret generic grafana-admin-secret \
 helm install prometheus prometheus-community/kube-prometheus-stack \
   --create-namespace \
   --namespace monitoring \
-  -f monitoring-values.yaml
+  -f kube-prometheus-stack-values.yaml
+
+# Install Loki for log aggregation
+helm install loki grafana-community/loki \
+  --namespace monitoring \
+  -f loki-values.yaml
+
+# Install Alloy to gather and send logs to Loki
+helm install alloy grafana/alloy \
+  --namespace monitoring \
+  -f alloy-values.yaml
 ```
 
 ## Local Build
