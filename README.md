@@ -95,3 +95,6 @@ To remote the observability stack:
 helmfile -f deploy/observability/helmfile.yaml destroy
 kubectl delete ns monitoring
 ```
+
+For additional details on how to uninstall the `kube-prometheus-stack` chart,
+refer to the [official documentation](https://github.com/prometheus-community/helm-charts/tree/556bfa39ea386b9d261b5ca49a9dc62f112ec78f/charts/kube-prometheus-stack#uninstall-helm-chart).
