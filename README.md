@@ -17,10 +17,10 @@ plugin:
 
 ## Deployment
 
-### The Observability Stack
+### Observability Stack
 
 First, ensure that `kubectl` is pointed at your cluster. Next, create the
-admin secret to log into the Grafana UI:
+admin secret needed to log into the Grafana UI:
 
 ```bash
 kubectl create namespace monitoring
@@ -30,13 +30,13 @@ kubectl create secret generic grafana-admin-secret \
   --from-literal=admin-password='supersecurepassword'
 ```
 
-Deploy the entire observability stack:
+Deploy the entire observability stack using `Helmfile`:
 
 ```bash
 helmfile -f deploy/observability/helmfile.yaml apply
 ```
 
-### The Cloudmetrics App
+### Cloudmetrics App
 
 Build the optimized container using the multi-stage Dockerfile, which also
 automatically runs unit tests:
@@ -45,7 +45,7 @@ automatically runs unit tests:
 docker build -t cloudmetrics:latest .
 ```
 
-To deploy the application to your local Kubernetes cluster, use Helm:
+To deploy the application to your local Kubernetes cluster, use `Helm`:
 
 ```bash
 helm install cloudmetrics-dev charts/cloudmetrics
@@ -68,7 +68,8 @@ appears, visit http://localhost:8080/metrics to see the raw Prometheus format.
 
     ![Grafana UI](images/grafana.png)
 
-    **Logs**: Go to `Explore`, select the `Loki` data source, and run: `{service_name="cloudmetrics-app"}`.
+    **Logs**: Go to `Explore`, select the `Loki` data source, and run a query
+    such as: `{service_name="cloudmetrics-app"}`.
 
     ![Grafana Logs](images/logs.png)
 
@@ -89,12 +90,12 @@ To stop and remove the application and its associated resources:
 helm uninstall cloudmetrics-dev
 ```
 
-To remote the observability stack:
+To remove the observability stack:
 
 ```bash
 helmfile -f deploy/observability/helmfile.yaml destroy
 kubectl delete ns monitoring
 ```
 
-For additional details on how to uninstall the `kube-prometheus-stack` chart,
-refer to the [official documentation](https://github.com/prometheus-community/helm-charts/tree/556bfa39ea386b9d261b5ca49a9dc62f112ec78f/charts/kube-prometheus-stack#uninstall-helm-chart).
+Note that Custom Resource Definitions (CRDs) are not deleted automatically. For
+details on how to uninstall them, refer to the [kube-prometheus-stack official documentation](https://github.com/prometheus-community/helm-charts/tree/556bfa39ea386b9d261b5ca49a9dc62f112ec78f/charts/kube-prometheus-stack#uninstall-helm-chart).
