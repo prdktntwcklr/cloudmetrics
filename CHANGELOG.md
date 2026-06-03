@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.0.0...v1.0.1) (2026-06-03)
+
+
+### Bug Fixes
+
+* **ci:** push image to ghcr ([#20](https://github.com/prdktntwcklr/cloudmetrics/issues/20)) ([f17fe30](https://github.com/prdktntwcklr/cloudmetrics/commit/f17fe3072f35df7d0417469bd9b378f59e4dfd18))
+
 ## 1.0.0 (2026-06-03)
 
 
