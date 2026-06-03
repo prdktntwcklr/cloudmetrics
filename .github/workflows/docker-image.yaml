@@ -2,12 +2,34 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - "main"
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - "main"
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
 
 jobs:
-  build:
+  release-please:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        id: release
+        with:
+          release-type: simple
+
+  build-and-push:
+    needs: release-please
+    # Always run on PRs, or if release-please finished on main
+    if: always() && (github.event_name == 'pull_request' || needs.release-please.result == 'success')
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout repository
@@ -28,11 +50,14 @@ jobs:
           type=sha
           # Tag with 'latest' only on the main branch
           type=raw,value=latest,enable={{is_default_branch}}
+          # Dynamic injection of the semantic version from Release Please
+          type=raw,value=${{ needs.release-please.outputs.tag_name }},enable=${{ needs.release-please.outputs.release_created == 'true' }}
 
     - name: Build the Docker image
       uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
       with:
         context: .
+        # TODO: Change to true once ready to push to a registry
         push: false
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
