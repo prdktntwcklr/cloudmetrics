@@ -17,10 +17,19 @@ plugin:
 
 ## Deployment
 
-### Observability Stack
+### Install Argo CD
 
-First, ensure that `kubectl` is pointed at your cluster. Next, create the
-admin secret needed to log into the Grafana UI:
+First, install Argo CD into your cluster:
+
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.4.3/manifests/install.yaml
+```
+
+### Create the Grafana Password 
+
+Before deploying the stack, create the password required to log into the Grafana
+UI:
 
 ```bash
 kubectl create namespace monitoring
