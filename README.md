@@ -14,7 +14,8 @@ via GitOps using Argo CD.
 
 ### Install Argo CD
 
-First, install Argo CD into your cluster:
+First, install [Argo CD](https://argo-cd.readthedocs.io/en/stable/) into your
+cluster:
 
 ```bash
 kubectl create namespace argocd
