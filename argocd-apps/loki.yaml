@@ -1,21 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prometheus
+  name: loki
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
   sources:
-    - repoURL: 'https://prometheus-community.github.io/helm-charts'
-      chart: kube-prometheus-stack
-      targetRevision: '86.0.1'
+    - repoURL: 'https://grafana-community.github.io/helm-charts'
+      chart: loki
+      targetRevision: '17.1.1'
       helm:
         valueFiles:
-          - $root/deploy/observability/kube-prometheus-stack-values.yaml
+          - $root/deploy/observability/loki-values.yaml
     - repoURL: 'https://github.com/prdktntwcklr/cloudmetrics'
-      targetRevision: HEAD 
+      targetRevision: HEAD
       ref: root
   destination:
     server: 'https://kubernetes.default.svc'
@@ -24,5 +24,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true

@@ -4,6 +4,7 @@ metadata:
   name: {{ .Release.Name }}-dashboard
   labels:
     grafana_dashboard: "1"
+    app.kubernetes.io/part-of: kube-prometheus-stack
 # NOTE: Dashboards deployed via this ConfigMap are read-only in Grafana.
 # You cannot save changes directly through the UI. 
 # To export the dashboard as JSON, first save it as a copy in Grafana, 

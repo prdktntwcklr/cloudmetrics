@@ -8,12 +8,6 @@ via Prometheus metrics and Loki-compatible logs.
 
 - A running [Kubernetes](https://kubernetes.io/) cluster
 - [Helm](https://helm.sh/) (package manager for Kubernetes) installed
-- [Helmfile](https://github.com/helmfile/helmfile) and the [Helm Diff](https://github.com/databus23/helm-diff)
-plugin:
-
-  ```bash
-  helm plugin install https://github.com/databus23/helm-diff
-  ```
 
 ## Deployment
 
