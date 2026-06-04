@@ -15,7 +15,8 @@ spec:
         valueFiles:
           - $root/deploy/observability/kube-prometheus-stack-values.yaml
     - repoURL: 'https://github.com/prdktntwcklr/cloudmetrics'
-      targetRevision: HEAD 
+      # TODO: Change to a specific release for production
+      targetRevision: refs/heads/main
       ref: root
   destination:
     server: 'https://kubernetes.default.svc'
