@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/prdktntwcklr/cloudmetrics'
     # Always pull in new applications as soon as they are merged
-    targetRevision: HEAD
+    targetRevision: refs/heads/main
     path: argocd-apps/templates
   destination:
     server: 'https://kubernetes.default.svc'

@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/prdktntwcklr/cloudmetrics'
     # TODO: Change to a specific release for production
-    targetRevision: HEAD
+    targetRevision: refs/heads/main
     path: charts/cloudmetrics
     helm:
       valueFiles:
