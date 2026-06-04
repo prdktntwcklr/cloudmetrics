@@ -97,17 +97,11 @@ docker run --rm -v ./app:/app -w /app golang:1.23-alpine sh -c "go mod init clou
 
 ## Cleanup
 
-To stop and remove the application and its associated resources:
+Because of the App of Apps pattern, you can tear down the entire application,
+the observability stack, and all associated resources with a single command:
 
 ```bash
-helm uninstall cloudmetrics-dev
-```
-
-To remove the observability stack:
-
-```bash
-helmfile -f deploy/observability/helmfile.yaml destroy
-kubectl delete ns monitoring
+kubectl delete -f argocd-apps/root-app.yaml
 ```
 
 Note that Custom Resource Definitions (CRDs) are not deleted automatically. For
