@@ -7,13 +7,16 @@ metadata:
     argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
-  source:
-    repoURL: 'https://prometheus-community.github.io/helm-charts'
-    chart: kube-prometheus-stack
-    targetRevision: '86.0.1'
-    helm:
-      valueFiles:
-        - kube-prometheus-stack-values.yaml
+  sources:
+    - repoURL: 'https://prometheus-community.github.io/helm-charts'
+      chart: kube-prometheus-stack
+      targetRevision: '86.0.1'
+      helm:
+        valueFiles:
+          - $root/deploy/observability/kube-prometheus-stack-values.yaml
+    - repoURL: 'https://github.com/prdktntwcklr/cloudmetrics'
+      targetRevision: HEAD 
+      ref: root
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
