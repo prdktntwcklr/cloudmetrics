@@ -7,7 +7,8 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/prdktntwcklr/cloudmetrics'
-    targetRevision: argo-cd
+    # TODO: Change to a specific release for production
+    targetRevision: HEAD
     path: charts/cloudmetrics
     helm:
       valueFiles:
