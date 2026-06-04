@@ -86,6 +86,10 @@ appears, visit http://localhost:8080/metrics to see the raw Prometheus format.
     kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
     ```
 
+    You should be able to explore the state of the running applications:
+
+    ![Argo CD UI](images/argocd.png)
+
 ## Development & Testing
 
 If you add new Go packages, update the `go.mod` and `go.sum` files using a
