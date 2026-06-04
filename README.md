@@ -22,8 +22,7 @@ kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubuse
 
 ### Create the Grafana Password 
 
-Before deploying the stack, create the password required to log into the Grafana
-UI:
+Before deploying, create the password required to log into the Grafana UI:
 
 ```bash
 kubectl create namespace monitoring
@@ -33,25 +32,10 @@ kubectl create secret generic grafana-admin-secret \
   --from-literal=admin-password='supersecurepassword'
 ```
 
-Deploy the entire observability stack using `Helmfile`:
+Deploy the entire application and observability stack using Argo CD:
 
 ```bash
-helmfile -f deploy/observability/helmfile.yaml apply
-```
-
-### Cloudmetrics App
-
-Build the optimized container using the multi-stage Dockerfile, which also
-automatically runs unit tests:
-
-```bash
-docker build -t cloudmetrics:latest .
-```
-
-To deploy the application to your local Kubernetes cluster, use `Helm`:
-
-```bash
-helm install cloudmetrics-dev charts/cloudmetrics
+kubectl apply -f argocd-apps/root-app.yaml
 ```
 
 ## Accessing Data
