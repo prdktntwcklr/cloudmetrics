@@ -14,7 +14,8 @@ via GitOps using Argo CD.
 
 ### Install Argo CD
 
-First, install Argo CD into your cluster:
+First, install [Argo CD](https://argo-cd.readthedocs.io/en/stable/) into your
+cluster:
 
 ```bash
 kubectl create namespace argocd
@@ -86,6 +87,10 @@ appears, visit http://localhost:8080/metrics to see the raw Prometheus format.
     kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
     ```
 
+    You should be able to explore the state of the running applications:
+
+    ![Argo CD UI](images/argocd.png)
+
 ## Development & Testing
 
 If you add new Go packages, update the `go.mod` and `go.sum` files using a
@@ -97,17 +102,11 @@ docker run --rm -v ./app:/app -w /app golang:1.23-alpine sh -c "go mod init clou
 
 ## Cleanup
 
-To stop and remove the application and its associated resources:
+Because of the App of Apps pattern, you can tear down the entire application,
+the observability stack, and all associated resources with a single command:
 
 ```bash
-helm uninstall cloudmetrics-dev
-```
-
-To remove the observability stack:
-
-```bash
-helmfile -f deploy/observability/helmfile.yaml destroy
-kubectl delete ns monitoring
+kubectl delete -f argocd-apps/root-app.yaml
 ```
 
 Note that Custom Resource Definitions (CRDs) are not deleted automatically. For
