@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/prdktntwcklr/cloudmetrics'
     targetRevision: argo-cd
-    path: argocd-apps
+    path: argocd-apps/templates
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: argocd
