@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://grafana-community.github.io/helm-charts'
+      chart: loki
+      targetRevision: '17.1.1'
+      helm:
+        valueFiles:
+          - $root/deploy/observability/loki-values.yaml
+    - repoURL: 'https://github.com/prdktntwcklr/cloudmetrics'
+      # TODO: Change to a specific release for production
+      targetRevision: refs/heads/main
+      ref: root
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

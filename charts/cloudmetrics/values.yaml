@@ -1,6 +1,5 @@
 replicaCount: 2
 
 image:
-  repository: cloudmetrics
-  tag: latest
-  pullPolicy: Always
+  repository: ghcr.io/prdktntwcklr/cloudmetrics/cloudmetrics-app
+  pullPolicy: IfNotPresent

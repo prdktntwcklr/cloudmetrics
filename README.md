@@ -2,25 +2,30 @@
 
 A Go-based sensor simulator for Kubernetes, featuring a complete observability
 stack. It generates real-time temperature telemetry and reading counts, exported
-via Prometheus metrics and Loki-compatible logs.
+via Prometheus metrics and Loki-compatible logs, fully automated and deployed
+via GitOps using Argo CD.
 
 ## Prerequisites
 
 - A running [Kubernetes](https://kubernetes.io/) cluster
 - [Helm](https://helm.sh/) (package manager for Kubernetes) installed
-- [Helmfile](https://github.com/helmfile/helmfile) and the [Helm Diff](https://github.com/databus23/helm-diff)
-plugin:
-
-  ```bash
-  helm plugin install https://github.com/databus23/helm-diff
-  ```
 
 ## Deployment
 
-### Observability Stack
+### Install Argo CD
 
-First, ensure that `kubectl` is pointed at your cluster. Next, create the
-admin secret needed to log into the Grafana UI:
+First, install Argo CD into your cluster:
+
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.4.3/manifests/install.yaml
+```
+
+### Create the Grafana Password 
+
+Before deploying, create the password required to log into the Grafana UI.
+Ensure that this namespace matches the target namespace of your Grafana
+deployment (defaulting to `monitoring`).
 
 ```bash
 kubectl create namespace monitoring
@@ -30,25 +35,14 @@ kubectl create secret generic grafana-admin-secret \
   --from-literal=admin-password='supersecurepassword'
 ```
 
-Deploy the entire observability stack using `Helmfile`:
+### Deploy the Stack (App-of-Apps)
+
+This uses the Argo CD **App of Apps** pattern. Deploying the single root
+bootstrap application will automatically discover, configure, and roll out the
+entire application and observability pipeline:
 
 ```bash
-helmfile -f deploy/observability/helmfile.yaml apply
-```
-
-### Cloudmetrics App
-
-Build the optimized container using the multi-stage Dockerfile, which also
-automatically runs unit tests:
-
-```bash
-docker build -t cloudmetrics:latest .
-```
-
-To deploy the application to your local Kubernetes cluster, use `Helm`:
-
-```bash
-helm install cloudmetrics-dev charts/cloudmetrics
+kubectl apply -f argocd-apps/root-app.yaml
 ```
 
 ## Accessing Data
@@ -72,6 +66,25 @@ appears, visit http://localhost:8080/metrics to see the raw Prometheus format.
     such as: `{service_name="cloudmetrics-app"}`.
 
     ![Grafana Logs](images/logs.png)
+
+3. **Argo CD Dashboard**: Use port forwarding:
+
+    ```bash
+    # Use local port 7070 to avoid conflicts with the application port (8080)
+    kubectl port-forward svc/argocd-server -n argocd 7070:443
+    ```
+
+    After that, open your browser and head to: https://localhost:7070/. Ignore
+    the Certificate Error warning (Argo CD uses a self-signed certificate) and
+    click on `Proceed anyway`. 
+
+    The default username is `admin`. Argo CD automatically generates a unique
+    startup password and stores it securely in a Kubernetes secret. Retrieve and
+    decode it by running:
+
+    ```bash
+    kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+    ```
 
 ## Development & Testing
 

@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/prdktntwcklr/cloudmetrics'
+    # Always pull in new applications as soon as they are merged
+    targetRevision: refs/heads/main
+    path: argocd-apps/templates
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
