@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
@@ -28,5 +30,28 @@ func TestUpdateTemperature(t *testing.T) {
 	gauge.Write(&metric)
 	if metric.GetGauge().GetValue() == 25.0 {
 		t.Errorf("Expected temperature to change, got %f", metric.GetGauge().GetValue())
+	}
+}
+
+func TestHealthzHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/healthz", nil)
+	if err != nil {
+		t.Fatalf("Could not create request: %v", err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(HealthzHandler)
+	handler.ServeHTTP(rr, req)
+
+	expectedStatus := http.StatusOK
+	if status := rr.Code; status != expectedStatus {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, expectedStatus)
+	}
+
+	expectedBody := `{"status":"OK"}`
+	if rr.Body.String() != expectedBody {
+    t.Errorf("handler returned unexpected body: got %v want %v",
+        rr.Body.String(), expectedBody)
 	}
 }
