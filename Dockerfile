@@ -6,7 +6,7 @@ RUN go mod download
 FROM golang:1.23-alpine AS tester
 WORKDIR /workdir/app
 COPY ./app ./
-RUN go test -v ./...
+RUN go test -v -tags=integration ./...
 
 FROM tester AS builder
 RUN go build -o main .

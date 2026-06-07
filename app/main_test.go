@@ -44,14 +44,14 @@ func TestHealthzHandler(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	expectedStatus := http.StatusOK
-	if status := rr.Code; status != expectedStatus {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, expectedStatus)
+	if rr.Code != expectedStatus {
+		t.Errorf("Expected status %v, got %v",
+			expectedStatus, rr.Code)
 	}
 
 	expectedBody := `{"status":"OK"}`
 	if rr.Body.String() != expectedBody {
-    t.Errorf("handler returned unexpected body: got %v want %v",
-        rr.Body.String(), expectedBody)
+    t.Errorf("Expected body %s, got %s",
+        expectedBody, rr.Body.String())
 	}
 }
