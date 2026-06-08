@@ -20,6 +20,23 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
           ports:
             - containerPort: 8080
+
+          # Ensures the container gets restarted if the process deadlocks
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+
+          # Ensures zero-downtime deployments by waiting for HTTP server to be responsive
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 5
+
           resources:
             requests:
               cpu: "100m"

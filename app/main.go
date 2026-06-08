@@ -44,6 +44,12 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "index.html")
 }
 
+func HealthzHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"status":"OK"}`))
+}
+
 func main() {
 	go func() {
 		currentTemp := 25.0
@@ -60,6 +66,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", IndexHandler)
+	mux.HandleFunc("/healthz", HealthzHandler)
 	mux.Handle("/metrics", promhttp.Handler())
 	
 	loggingMux := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
