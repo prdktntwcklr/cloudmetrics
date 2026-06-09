@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.0.1...v1.1.0) (2026-06-09)
+
+
+### Features
+
+* add argo cd to automate deployment ([#22](https://github.com/prdktntwcklr/cloudmetrics/issues/22)) ([b9f28a4](https://github.com/prdktntwcklr/cloudmetrics/commit/b9f28a4257dfc0d5b245e7fe823d9a93210c5f81))
+* **app:** add git sha version info ([#26](https://github.com/prdktntwcklr/cloudmetrics/issues/26)) ([2d74dfd](https://github.com/prdktntwcklr/cloudmetrics/commit/2d74dfdbfb5451ec54eecd9b36da020f97b4c22f))
+* **app:** add health check ([#25](https://github.com/prdktntwcklr/cloudmetrics/issues/25)) ([2c1273a](https://github.com/prdktntwcklr/cloudmetrics/commit/2c1273ad196ffe2491e412a1f49861a6134c77d5))
+
 ## [1.0.1](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.0.0...v1.0.1) (2026-06-03)
 
 
