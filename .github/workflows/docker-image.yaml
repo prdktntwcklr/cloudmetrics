@@ -31,6 +31,8 @@ jobs:
     # Always run on PRs, or if release-please finished on main
     if: always() && (github.event_name == 'pull_request' || needs.release-please.result == 'success')
     runs-on: ubuntu-24.04
+    env:
+      GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -53,6 +55,8 @@ jobs:
         push: false
         load: true
         tags: cloudmetrics:smoke-test
+        build-args: |
+          GIT_SHA=${{ env.GIT_SHA }}
 
     - name: Run Smoke Test
       working-directory: ./app
@@ -85,3 +89,5 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          GIT_SHA=${{ env.GIT_SHA }}
