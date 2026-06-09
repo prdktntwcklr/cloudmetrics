@@ -10,8 +10,8 @@ RUN go test -v -tags=integration ./...
 
 FROM tester AS builder
 ARG GIT_SHA
-RUN : "${GIT_SHA:?ERROR: GIT_SHA build argument is required!}"
-RUN CGO_ENABLED=0 GOOS=linux go build \
+RUN : "${GIT_SHA:?ERROR: GIT_SHA build argument is required!}" && \
+    CGO_ENABLED=0 GOOS=linux go build \
     -ldflags "-X main.GitCommit=${GIT_SHA}" \
     -o main .
 
