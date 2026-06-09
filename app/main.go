@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"math/rand"
 	"net/http"
@@ -40,8 +41,19 @@ func IncrementReadings(counter CounterIncrementer) {
 	counter.Inc()
 }
 
+// TODO: refactor to avoid using global variables
+var GitCommit = "unknown"
+var templates = template.Must(template.ParseFiles("index.html"))
+
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "index.html")
+	data := map[string]string{
+		"GitCommit": GitCommit,
+	}
+
+	err := templates.Execute(w, data)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
 }
 
 func HealthzHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,8 +75,9 @@ func main() {
 		}
 	}()
 
-	mux := http.NewServeMux()
+	log.Printf("Starting Cloudmetrics App Version: %s", GitCommit)
 
+	mux := http.NewServeMux()
 	mux.HandleFunc("/", IndexHandler)
 	mux.HandleFunc("/healthz", HealthzHandler)
 	mux.Handle("/metrics", promhttp.Handler())

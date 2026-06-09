@@ -20,7 +20,7 @@ func TestHealthzIntegration(t *testing.T) {
     defer resp.Body.Close()
 
 	expectedStatus := http.StatusOK
-    if resp.StatusCode != http.StatusOK {
+    if resp.StatusCode != expectedStatus {
         t.Errorf("Expected status %v, got %v", expectedStatus, resp.StatusCode)
     }
 
