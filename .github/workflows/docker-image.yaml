@@ -76,7 +76,7 @@ jobs:
         images: ghcr.io/${{ github.repository }}/cloudmetrics-app
         tags: |
           # Tag with the SHA (shortened, no prefix)
-          type=sha,prefix=,value=${{ env.GIT_SHA }}
+          type=raw,prefix=,value=${{ substr(env.GIT_SHA, 0, 7) }}
           # Tag with 'latest' only on the main branch
           type=raw,value=latest,enable={{is_default_branch}}
           # Dynamic injection of the semantic version from Release Please
