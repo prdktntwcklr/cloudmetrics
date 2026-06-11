@@ -72,6 +72,8 @@ jobs:
     - name: Extract Docker metadata
       id: meta
       uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+      env:
+          DOCKER_METADATA_PR_HEAD_SHA: true
       with:
         images: ghcr.io/${{ github.repository }}/cloudmetrics-app
         tags: |
@@ -92,13 +94,12 @@ jobs:
         build-args: |
           GIT_SHA=${{ env.GIT_SHA }}
 
-    - name: Update Chart appVersion to trigger ArgoCD deployment
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    - name: Update Chart appVersion (ensures script works)
       run: |
-        chmod +x ./scripts/update-version.sh
-        ./scripts/update-version.sh "${{ needs.release-please.outputs.tag_name }}" "${{ github.sha }}"
+        chmod +x ./.github/workflows/scripts/update-version.sh
+        ./.github/workflows/scripts/update-version.sh "${{ needs.release-please.outputs.tag_name }}" "${{ env.GIT_SHA }}"
 
-    - name: Commit and Push Changes
+    - name: Commit and Push Changes to trigger ArgoCD deployment
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         git config --global user.name "github-actions[bot]"
