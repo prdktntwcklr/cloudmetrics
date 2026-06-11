@@ -75,8 +75,8 @@ jobs:
       with:
         images: ghcr.io/${{ github.repository }}/cloudmetrics-app
         tags: |
-          # Tag with the SHA (shortened)
-          type=sha
+          # Tag with the SHA (shortened, no prefix)
+          type=sha,prefix=
           # Tag with 'latest' only on the main branch
           type=raw,value=latest,enable={{is_default_branch}}
           # Dynamic injection of the semantic version from Release Please
@@ -91,3 +91,19 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           GIT_SHA=${{ env.GIT_SHA }}
+
+    - name: Update Chart appVersion to trigger ArgoCD deployment
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        chmod +x ./scripts/update-version.sh
+        ./scripts/update-version.sh "${{ needs.release-please.outputs.tag_name }}" "${{ github.sha }}"
+
+    - name: Commit and Push Changes
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        
+        git add charts/cloudmetrics/Chart.yaml
+        git commit -m "chore(ci): update appVersion [skip ci]"
+        git push
