@@ -3,5 +3,5 @@ name: cloudmetrics
 description: Helm chart for the CloudMetrics application
 type: application
 version: 1.0.1
-appVersion: "3e0c06b"
+appVersion: "v1.2.0"
 icon: https://raw.githubusercontent.com/cncf/artwork/refs/heads/main/other/cncf/icon/color/cncf-icon-color.svg
