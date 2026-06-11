@@ -71,7 +71,7 @@ jobs:
 
     - name: Set Short SHA
       run: |
-        echo "SHORT_SHA=${${{ env.GIT_SHA }}:0:7}" >> $GITHUB_ENV
+        echo "SHORT_SHA=${GIT_SHA:0:7}" >> $GITHUB_ENV
     
     - name: Extract Docker metadata
       id: meta
