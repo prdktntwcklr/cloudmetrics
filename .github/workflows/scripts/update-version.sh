@@ -37,7 +37,7 @@ main() {
   # Note: This command requires the Go version of 'yq' (mikefarah/yq), 
   # NOT the Python version. (Install via 'snap install yq')
   yq -i ".appVersion = \"${VERSION}\"" "$CHART_PATH"
-  echo "Successfully updated appVersion to '${VERSION}' in $CHART_PATH"
+  echo "$VERSION"
 }
 
 # Only run main if the script is being executed directly, not sourced
