@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.1.0...v1.2.0) (2026-06-11)
+
+
+### Features
+
+* **ci:** add new version to bot commit message ([#33](https://github.com/prdktntwcklr/cloudmetrics/issues/33)) ([3e0c06b](https://github.com/prdktntwcklr/cloudmetrics/commit/3e0c06be3406f65a007fba8affe642de16e17f1e))
+* **ci:** auto-update chart on push to main ([#29](https://github.com/prdktntwcklr/cloudmetrics/issues/29)) ([f13a509](https://github.com/prdktntwcklr/cloudmetrics/commit/f13a509613df464cfdb1fe7ddf085d84288d46c5))
+
+
+### Bug Fixes
+
+* **ci:** fix script path ([#31](https://github.com/prdktntwcklr/cloudmetrics/issues/31)) ([0a9f29c](https://github.com/prdktntwcklr/cloudmetrics/commit/0a9f29cfae9e845efca5f328e14a7d90ce26c49e))
+* **ci:** use env var for image tag ([#32](https://github.com/prdktntwcklr/cloudmetrics/issues/32)) ([3f9e7ef](https://github.com/prdktntwcklr/cloudmetrics/commit/3f9e7ef8cfbffe4b6bf57fc59193b887358c1430))
+
 ## [1.1.0](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.0.1...v1.1.0) (2026-06-09)
 
 
