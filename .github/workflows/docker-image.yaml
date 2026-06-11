@@ -95,8 +95,8 @@ jobs:
     - name: Update Chart appVersion to trigger ArgoCD deployment
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
-        chmod +x ./scripts/update-version.sh
-        ./scripts/update-version.sh "${{ needs.release-please.outputs.tag_name }}" "${{ github.sha }}"
+        chmod +x ./.github/workflows/scripts/update-version.sh
+        ./.github/workflows/scripts/update-version.sh "${{ needs.release-please.outputs.tag_name }}" "${{ github.sha }}"
 
     - name: Commit and Push Changes
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
