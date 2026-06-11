@@ -6,7 +6,7 @@ setup() {
   # Create a temporary directory and dummy Chart.yaml for testing
   TEST_DIR=$(mktemp -d -p "$HOME")
   export CHART_PATH="$TEST_DIR/Chart.yaml"
-  echo "appVersion: 1.0.0" > "$CHART_PATH"
+  printf "apiVersion: v2\nappVersion: 1.0.0" > "$CHART_PATH"
 }
 
 teardown() {
@@ -34,7 +34,7 @@ teardown() {
 @test "Fail when both inputs are missing" {
   run determine_version "" ""
   [ "$status" -eq 1 ]
-  [[ "$output" =~ "ERROR: No Release Tag" ]]
+  [[ "$output" = "ERROR: No Release Tag AND no GitHub SHA provided." ]]
 }
 
 @test "Full execution updates the file successfully" {
@@ -44,7 +44,19 @@ teardown() {
   [[ ! "$(cat "$CHART_PATH")" =~ "$VERSION_TO_SET" ]]
 
   run main "$VERSION_TO_SET" ""
-  echo "Command output: $output"
   [ "$status" -eq 0 ]
+  [[ "$output" = "$VERSION_TO_SET" ]]
+  [[ "$(cat "$CHART_PATH")" =~ "$VERSION_TO_SET" ]]
+}
+
+@test "Full execution updates the file successfully with git sha" {
+  VERSION_TO_SET="abc1234"
+
+  # Ensure file is not yet updated
+  [[ ! "$(cat "$CHART_PATH")" =~ "$VERSION_TO_SET" ]]
+
+  run main "$VERSION_TO_SET" ""
+  [ "$status" -eq 0 ]
+  [ "$output" = "$VERSION_TO_SET" ]
   [[ "$(cat "$CHART_PATH")" =~ "$VERSION_TO_SET" ]]
 }
