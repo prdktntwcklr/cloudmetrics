@@ -34,7 +34,9 @@ main() {
   fi
 
   # Update the Helm chart in-place using yq
-  yq -i -y ".appVersion = \"${VERSION}\"" "$CHART_PATH"
+  # Note: This command requires the Go version of 'yq' (mikefarah/yq), 
+  # NOT the Python version. (Install via 'snap install yq')
+  yq -i ".appVersion = \"${VERSION}\"" "$CHART_PATH"
   echo "Successfully updated appVersion to '${VERSION}' in $CHART_PATH"
 }
 
