@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.2.0...v1.3.0) (2026-06-14)
+
+
+### Features
+
+* **app:** spin up several sensors ([#37](https://github.com/prdktntwcklr/cloudmetrics/issues/37)) ([21713d0](https://github.com/prdktntwcklr/cloudmetrics/commit/21713d0ffa566311185a5748b5c93ee29993e5e3))
+* **app:** use structured logging ([#34](https://github.com/prdktntwcklr/cloudmetrics/issues/34)) ([df896c9](https://github.com/prdktntwcklr/cloudmetrics/commit/df896c97a88569ff2dc2052488ea8127ea257f31))
+
 ## [1.2.0](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.1.0...v1.2.0) (2026-06-11)
 
 
