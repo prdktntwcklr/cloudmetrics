@@ -61,31 +61,24 @@ func TestHealthzHandler(t *testing.T) {
 }
 
 func TestIndexHandler(t *testing.T) {
-	// Save original global state and schedule restoration
-	oldGitCommit := GitCommit
-	oldTemplates := templates
+	t.Parallel()
 
-	t.Cleanup(func() {
-		GitCommit = oldGitCommit
-		templates = oldTemplates
-	})
-	
-	// Override the global GitCommit variable for the test environment
-	GitCommit = "test-sha-12345"
 	expectedString := "test-sha-12345"
 
-	// Initialize the global template cache just for the test
-	// (Normally main() handles this, but go test bypasses main())
-	var err error
-	templates, err = template.ParseFiles("index.html")
+	tmpl, err := template.ParseFiles("index.html")
 	if err != nil {
 		t.Fatalf("Failed to parse index.html template: %v", err)
 	}
 
+	app := &App{
+		GitCommit: expectedString,
+		Templates: tmpl,
+	}
+
 	req := httptest.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
-
-	IndexHandler(w, req)
+	app.IndexHandler(w, req)
+	
 	resp := w.Result()
 	defer resp.Body.Close()
 

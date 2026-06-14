@@ -42,16 +42,20 @@ func IncrementReadings(counter CounterIncrementer) {
 	counter.Inc()
 }
 
-// TODO: refactor to avoid using global variables
-var GitCommit = "unknown"
-var templates = template.Must(template.ParseFiles("index.html"))
+type App struct {
+	GitCommit string
+	Templates *template.Template
+}
 
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
+// Injected from the Dockerfile
+var Version = "unknown"
+
+func (app *App) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]string{
-		"GitCommit": GitCommit,
+		"GitCommit": app.GitCommit,
 	}
 
-	err := templates.Execute(w, data)
+	err := app.Templates.Execute(w, data)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
@@ -69,6 +73,11 @@ func main() {
 	}
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, opts))
 	slog.SetDefault(logger)
+
+	app := &App{
+        GitCommit: Version, 
+        Templates: template.Must(template.ParseFiles("index.html")),
+    }
 	
 	go func() {
 		currentTemp := 25.0
@@ -82,10 +91,10 @@ func main() {
 		}
 	}()
 
-	slog.Info("Starting Cloudmetrics App", "version", GitCommit)
+	slog.Info("Starting Cloudmetrics App", "version", app.GitCommit)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", IndexHandler)
+	mux.HandleFunc("/", app.IndexHandler)
 	mux.HandleFunc("/healthz", HealthzHandler)
 	mux.Handle("/metrics", promhttp.Handler())
 	
