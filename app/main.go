@@ -2,9 +2,10 @@ package main
 
 import (
 	"html/template"
-	"log"
+	"log/slog"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -63,9 +64,15 @@ func HealthzHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	opts := &slog.HandlerOptions{
+		Level: slog.LevelDebug, 
+	}
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, opts))
+	slog.SetDefault(logger)
+	
 	go func() {
 		currentTemp := 25.0
-		log.Println("Starting sensor simulation loop...")
+		slog.Info("Starting sensor simulation loop...")
 
 		for {
 			UpdateTemperature(ambientTemp, &currentTemp)
@@ -75,7 +82,7 @@ func main() {
 		}
 	}()
 
-	log.Printf("Starting Cloudmetrics App Version: %s", GitCommit)
+	slog.Info("Starting Cloudmetrics App", "version", GitCommit)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", IndexHandler)
@@ -84,13 +91,20 @@ func main() {
 	
 	loggingMux := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// TODO: Consider excluding "/metrics" from logs to reduce noise in production
-        log.Printf("Request: %s %s from %s", r.Method, r.URL.Path, r.RemoteAddr)
+        slog.Debug("HTTP request received", 
+			"method", r.Method, 
+			"path", r.URL.Path, 
+			"remote_addr", r.RemoteAddr,
+		)
         mux.ServeHTTP(w, r)
     })
 	
 	port := "8080"
 	address := ":" + port
 
-	log.Printf("Starting server on %s", address)
-	log.Fatal(http.ListenAndServe(address, loggingMux))
+	slog.Info("Starting server", "address", address)
+	if err := http.ListenAndServe(address, loggingMux); err != nil {
+		slog.Error("Server crashed", "error", err)
+		os.Exit(1)
+	}
 }
