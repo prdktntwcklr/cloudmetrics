@@ -15,14 +15,14 @@ import (
 )
 
 var (
-	ambientTemp = promauto.NewGauge(prometheus.GaugeOpts{
+	ambientTempVec = promauto.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "cm_ambient_temp_celsius",
-		Help: "Current ambient temperature of the simulated environment.",
-	})
-	readingsTotal = promauto.NewCounter(prometheus.CounterOpts{
+		Help: "Current ambient temperature of the simulated environment labeled by sensor.",
+	}, []string{"sensor_id"})
+	readingsTotalVec = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "cm_readings_total",
-		Help: "Total number of sensor readings processed.",
-	})
+		Help: "Total number of sensor readings processed labeled by sensor.",
+	}, []string{"sensor_id"})
 )
 
 type TemperatureSetter interface {
@@ -63,6 +63,21 @@ func NewSensor(id int) *Sensor {
 	}
 }
 
+func (s *Sensor) Run() {
+	slog.Info("Starting sensor simulation...", "sensor_id", s.Id)
+
+	tempGauge := ambientTempVec.WithLabelValues(s.Id)
+	counter := readingsTotalVec.WithLabelValues(s.Id)
+
+	for {
+		delta := (rand.Float64() - 0.5)
+		s.Current += delta
+		tempGauge.Set(s.Current)
+		counter.Inc()
+		time.Sleep(2 * time.Second)
+	}
+}
+
 func (app *App) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]string{
 		"GitCommit": app.GitCommit,
@@ -92,17 +107,10 @@ func main() {
         Templates: template.Must(template.ParseFiles("index.html")),
     }
 	
-	go func() {
-		currentTemp := 25.0
-		slog.Info("Starting sensor simulation loop...")
-
-		for {
-			UpdateTemperature(ambientTemp, &currentTemp)
-			IncrementReadings(readingsTotal)
-			
-			time.Sleep(2 * time.Second)
-		}
-	}()
+	for i := 1; i <= 10; i++ {
+		sensor := NewSensor(i)
+		go sensor.Run()
+	}
 
 	slog.Info("Starting Cloudmetrics App", "version", app.GitCommit)
 
