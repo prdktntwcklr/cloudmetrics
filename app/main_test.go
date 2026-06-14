@@ -96,3 +96,13 @@ func TestIndexHandler(t *testing.T) {
 		t.Errorf("Expected HTML body to contain '%v', but received:\n%s", expectedString, bodyString)
 	}
 }
+
+func TestNewSensor(t *testing.T) {
+	expectedId := "sensor-42"
+
+	sensor := NewSensor(42)
+	if sensor.Id != expectedId {
+		t.Errorf("Expected sensor id %s, got %s",
+			expectedId, sensor.Id)
+		}
+}

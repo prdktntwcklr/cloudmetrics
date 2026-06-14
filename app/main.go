@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log/slog"
 	"math/rand"
@@ -49,6 +50,18 @@ type App struct {
 
 // Injected from the Dockerfile
 var Version = "unknown"
+
+type Sensor struct {
+	Id       string
+	Current  float64
+}
+
+func NewSensor(id int) *Sensor {
+	return &Sensor{
+		Id:       fmt.Sprintf("sensor-%02d", id),
+		Current:  25.0,
+	}
+}
 
 func (app *App) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]string{
