@@ -123,7 +123,6 @@ func main() {
 	})
 	
 	loggingMux := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Consider excluding "/metrics" from logs to reduce noise in production
         slog.Debug("HTTP request received", 
 			"method", r.Method, 
 			"path", r.URL.Path, 
