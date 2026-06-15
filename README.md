@@ -48,8 +48,10 @@ kubectl apply -f argocd-apps/root-app.yaml
 
 ## Accessing Data
 
-1. **Application Metrics**: Visit http://localhost:8080/metrics to see the raw
-Prometheus format.
+1. **Application Metrics**: Visit http://localhost:8080/ and click on `Metrics`
+to see the raw Prometheus format.
+
+    ![Homepage](images/homepage.png)
 
 2. **Grafana UI**: To access the Grafana UI, first port-forward it:
 
