@@ -58,6 +58,15 @@ jobs:
         build-args: |
           GIT_SHA=${{ env.GIT_SHA }}
 
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+      with:
+        image-ref: 'cloudmetrics:smoke-test'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        severity: 'CRITICAL,HIGH'
+
     - name: Run Smoke Test
       working-directory: ./app
       run: go test -v -tags=smoke ./...
