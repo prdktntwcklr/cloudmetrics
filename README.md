@@ -48,8 +48,8 @@ kubectl apply -f argocd-apps/root-app.yaml
 
 ## Accessing Data
 
-1. **Application Metrics**: Once the `EXTERNAL-IP` of the `cloudmetrics-service`
-appears, visit http://localhost:8080/metrics to see the raw Prometheus format.
+1. **Application Metrics**: Visit http://localhost:8080/metrics to see the raw
+Prometheus format.
 
 2. **Grafana UI**: To access the Grafana UI, first port-forward it:
 
@@ -61,10 +61,10 @@ appears, visit http://localhost:8080/metrics to see the raw Prometheus format.
     password you stored in the Kubernetes secret above. You should be able to
     open the `Cloudmetrics` dashboard to see the metrics being displayed.
 
-    ![Grafana UI](images/grafana.png)
+    ![Grafana Dashboard](images/dashboard.png)
 
-    **Logs**: Go to `Explore`, select the `Loki` data source, and run a query
-    such as: `{service_name="cloudmetrics-app"}`.
+    **Logs**: Go to `Drilldown > Logs` to see logs for different services 
+    running in your cluster.
 
     ![Grafana Logs](images/logs.png)
 
