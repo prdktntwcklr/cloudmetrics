@@ -115,9 +115,12 @@ func main() {
 	slog.Info("Starting Cloudmetrics App", "version", app.GitCommit)
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", app.IndexHandler)
-	mux.HandleFunc("/healthz", HealthzHandler)
-	mux.Handle("/metrics", promhttp.Handler())
+	mux.HandleFunc("GET /{$}", app.IndexHandler)
+	mux.HandleFunc("GET /healthz", HealthzHandler)
+	mux.Handle("GET /metrics", promhttp.Handler())
+	mux.HandleFunc("GET /styles.css", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "styles.css")
+	})
 	
 	loggingMux := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// TODO: Consider excluding "/metrics" from logs to reduce noise in production
