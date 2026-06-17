@@ -2,13 +2,13 @@
 # This layer is only rebuilt when go.mod or go.sum changes.
 FROM golang:1.23-alpine AS modules
 WORKDIR /workdir/app
-COPY app/go.mod app/go.sum ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 # Stage 2: Run unit and integration tests
 FROM golang:1.23-alpine AS tester
 WORKDIR /workdir/app
-COPY ./app ./
+COPY . .
 RUN go test -v -tags=integration ./...
 
 # Stage 3: Build the application
@@ -24,6 +24,6 @@ RUN : "${GIT_SHA:?ERROR: GIT_SHA build argument is required!}" && \
 FROM alpine:3.22.4  
 WORKDIR /root
 COPY --from=builder /workdir/app/main .
-COPY ./app/index.html ./app/styles.css ./
+COPY ./index.html ./styles.css ./
 EXPOSE 8080
 CMD ["./main"]
