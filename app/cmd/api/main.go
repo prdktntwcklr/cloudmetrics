@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log/slog"
@@ -89,6 +90,28 @@ func (app *App) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type Reading struct {
+	SensorID    int     `json:"sensor_id"`
+	Temperature float64 `json:"temperature"`
+}
+
+func (app *App) IngestReadingHandler(w http.ResponseWriter, r *http.Request) {
+	var rdr Reading
+	err := json.NewDecoder(r.Body).Decode(&rdr)
+	if err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	slog.Info("Received reading", "sensor_id", rdr.SensorID, "temp", rdr.Temperature)
+
+	sensorStr := fmt.Sprintf("sensor_%d", rdr.SensorID)
+	ambientTempVec.WithLabelValues(sensorStr).Set(rdr.Temperature)
+	readingsTotalVec.WithLabelValues(sensorStr).Inc()
+
+	w.WriteHeader(http.StatusAccepted)
+}
+
 func HealthzHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -118,6 +141,7 @@ func main() {
 	mux.HandleFunc("GET /{$}", app.IndexHandler)
 	mux.HandleFunc("GET /healthz", HealthzHandler)
 	mux.Handle("GET /metrics", promhttp.Handler())
+	mux.HandleFunc("POST /api/readings", app.IngestReadingHandler)
 	mux.HandleFunc("GET /styles.css", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "styles.css")
 	})
