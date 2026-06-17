@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.3.0...v1.4.0) (2026-06-17)
+
+
+### Features
+
+* **app:** add css styling ([#40](https://github.com/prdktntwcklr/cloudmetrics/issues/40)) ([1441693](https://github.com/prdktntwcklr/cloudmetrics/commit/1441693b42562055888ab3a6fe5a24bd487c4f5f))
+* **app:** add POST endpoint for sensor readings ([#44](https://github.com/prdktntwcklr/cloudmetrics/issues/44)) ([bdeb477](https://github.com/prdktntwcklr/cloudmetrics/commit/bdeb477669d6cc033fb3b4fbe63850d6830b5218))
+
 ## [1.3.0](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.2.0...v1.3.0) (2026-06-14)
 
 
