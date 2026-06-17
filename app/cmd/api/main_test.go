@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"html/template"
 	"io"
 	"net/http"
@@ -10,6 +13,7 @@ import (
 	"time"
 	
 	"github.com/prometheus/client_golang/prometheus/testutil"
+	dto "github.com/prometheus/client_model/go"
 )
 
 func TestHealthzHandler(t *testing.T) {
@@ -97,5 +101,68 @@ func TestSensorRun(t *testing.T) {
 	currentTemp := testutil.ToFloat64(ambientTempVec.WithLabelValues(sensorId))
 	if currentTemp < 24.0 || currentTemp > 26.0 {
 		t.Errorf("Expected initial temperature to be roughly between 24 and 26, got %v", currentTemp)
+	}
+}
+
+func TestIngestReadingHandler_Success(t *testing.T) {
+	app := &App{}
+
+	sensorID := 5
+	sensorStr := fmt.Sprintf("sensor_%d", sensorID)
+	expectedTemp := 24.5
+
+	reading := Reading{
+		SensorID:    sensorID,
+		Temperature: expectedTemp,
+	}
+	jsonPayload, _ := json.Marshal(reading)
+
+	req := httptest.NewRequest("POST", "/api/readings", bytes.NewBuffer(jsonPayload))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	app.IngestReadingHandler(w, req)
+	resp := w.Result()
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusAccepted {
+		t.Errorf("Expected status 202 Accepted, got %v", resp.Status)
+	}
+
+	var gaugeMetric dto.Metric
+	err := ambientTempVec.WithLabelValues(sensorStr).Write(&gaugeMetric)
+	if err != nil {
+		t.Fatalf("Failed to read gauge metric: %v", err)
+	}
+
+	actualTemp := gaugeMetric.GetGauge().GetValue()
+	if actualTemp != expectedTemp {
+		t.Errorf("Expected gauge temperature to be %f, got %f", expectedTemp, actualTemp)
+	}
+
+	var counterMetric dto.Metric
+	err = readingsTotalVec.WithLabelValues(sensorStr).Write(&counterMetric)
+	if err != nil {
+		t.Fatalf("Failed to read counter metric: %v", err)
+	}
+
+	actualCount := counterMetric.GetCounter().GetValue()
+	if actualCount < 1 {
+		t.Errorf("Expected counter to be incremented, got %f", actualCount)
+	}
+}
+
+func TestIngestReadingHandler_BadRequest(t *testing.T) {
+	app := &App{}
+
+	req := httptest.NewRequest("POST", "/api/readings", bytes.NewBufferString("not-json"))
+	w := httptest.NewRecorder()
+
+	app.IngestReadingHandler(w, req)
+	resp := w.Result()
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusBadRequest {
+		t.Errorf("Expected status 400 Bad Request for bad JSON, got %v", resp.Status)
 	}
 }
