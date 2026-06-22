@@ -31,84 +31,103 @@ jobs:
     # Always run on PRs, or if release-please finished on main
     if: always() && (github.event_name == 'pull_request' || needs.release-please.result == 'success')
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: api
+            dockerfile: ./app/api/Dockerfile
+            context: ./app/api
+            test_dir: ./app/api
+            test_command: go test -v -tags=smoke ./...
+            image_name: cloudmetrics-api
+          - service: sensor
+            dockerfile: ./app/sensor/Dockerfile
+            context: ./app/sensor
+            test_dir: ./app/sensor
+            test_command: go test -v ./...
+            image_name: cloudmetrics-sensor
     env:
       GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-    - name: Lint Dockerfile
-      uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
-      with:
-        dockerfile: ./app/api/Dockerfile
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
 
-    - name: Set up Go
-      uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
-      with:
-        go-version: '1.23'
-        cache: true
+      - name: Set up Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version: '1.23'
+          cache: true
 
-    - name: Build local image for testing
-      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
-      with:
-        context: ./app/api
-        push: false
-        load: true
-        tags: cloudmetrics:smoke-test
-        build-args: |
-          GIT_SHA=${{ env.GIT_SHA }}
+      - name: Build local image for testing
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: false
+          load: true
+          tags: cloudmetrics-${{ matrix.service }}:smoke-test
+          build-args: |
+            GIT_SHA=${{ env.GIT_SHA }}
 
-    - name: Run Smoke Test
-      working-directory: ./app/api
-      run: go test -v -tags=smoke ./...
+      - name: Run tests
+        working-directory: ${{ matrix.test_dir }}
+        run: ${{ matrix.test_command }}
 
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub
 
-    - name: Set Short SHA
-      run: |
-        echo "SHORT_SHA=${GIT_SHA:0:7}" >> $GITHUB_ENV
-    
-    - name: Extract Docker metadata
-      id: meta
-      uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
-      with:
-        images: ghcr.io/${{ github.repository }}/cloudmetrics-app
-        tags: |
-          # Tag with the SHA (shortened, no prefix)
-          type=raw,prefix=,value=${{ env.SHORT_SHA }}
-          # Tag with 'latest' only on the main branch
-          type=raw,value=latest,enable={{is_default_branch}}
-          # Dynamic injection of the semantic version from Release Please
-          type=raw,value=${{ needs.release-please.outputs.tag_name }},enable=${{ needs.release-please.outputs.release_created == 'true' }}
+      - name: Set Short SHA
+        run: |
+          echo "SHORT_SHA=${GIT_SHA:0:7}" >> $GITHUB_ENV
 
-    - name: Build the Docker image
-      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
-      with:
-        context: ./app/api
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        build-args: |
-          GIT_SHA=${{ env.GIT_SHA }}
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+        with:
+          images: ghcr.io/${{ github.repository }}/${{ matrix.image_name }}
+          tags: |
+            # Tag with the SHA (shortened, no prefix)
+            type=raw,prefix=,value=${{ env.SHORT_SHA }}
+            # Tag with 'latest' only on the main branch
+            type=raw,value=latest,enable={{is_default_branch}}
+            # Dynamic injection of the semantic version from Release Please
+            type=raw,value=${{ needs.release-please.outputs.tag_name }},enable=${{ needs.release-please.outputs.release_created == 'true' }}
 
-    - name: Run Update Version Script on Chart.yaml
-      id: update_chart
-      run: |
-        chmod +x ./.github/workflows/scripts/update-version.sh
-        NEW_VERSION=$(./.github/workflows/scripts/update-version.sh "${{ needs.release-please.outputs.tag_name }}" "${{ env.GIT_SHA }}")
-        echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+      - name: Build the Docker image
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            GIT_SHA=${{ env.GIT_SHA }}
 
-    - name: Commit and Push Changes to trigger ArgoCD deployment
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        
-        git add charts/cloudmetrics/Chart.yaml
-        git commit -m "chore(ci): update appVersion to ${{ steps.update_chart.outputs.new_version }} [skip ci]"
-        git push
+      - name: Run Update Version Script on Chart.yaml
+        id: update_chart
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && matrix.service == 'api'
+        run: |
+          chmod +x ./.github/workflows/scripts/update-version.sh
+          NEW_VERSION=$(./.github/workflows/scripts/update-version.sh "${{ needs.release-please.outputs.tag_name }}" "${{ env.GIT_SHA }}")
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and Push Changes to trigger ArgoCD deployment
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && matrix.service == 'api'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add charts/cloudmetrics/Chart.yaml
+          git commit -m "chore(ci): update appVersion to ${{ steps.update_chart.outputs.new_version }} [skip ci]"
+          git push
