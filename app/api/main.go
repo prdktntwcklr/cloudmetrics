@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"log/slog"
-	"math/rand"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -26,24 +24,6 @@ var (
 	}, []string{"sensor_id"})
 )
 
-type TemperatureSetter interface {
-	Set(float64)
-}
-
-func UpdateTemperature(setter TemperatureSetter, currentTemp *float64) {
-	delta := (rand.Float64() - 0.5)
-	*currentTemp += delta
-	setter.Set(*currentTemp)
-}
-
-type CounterIncrementer interface {
-	Inc()
-}
-
-func IncrementReadings(counter CounterIncrementer) {
-	counter.Inc()
-}
-
 type App struct {
 	GitCommit string
 	Templates *template.Template
@@ -51,33 +31,6 @@ type App struct {
 
 // Injected from the Dockerfile
 var Version = "unknown"
-
-type Sensor struct {
-	Id       string
-	Current  float64
-}
-
-func NewSensor(id int) *Sensor {
-	return &Sensor{
-		Id:       fmt.Sprintf("sensor-%02d", id),
-		Current:  25.0,
-	}
-}
-
-func (s *Sensor) Run() {
-	slog.Info("Starting sensor simulation...", "sensor_id", s.Id)
-
-	tempGauge := ambientTempVec.WithLabelValues(s.Id)
-	counter := readingsTotalVec.WithLabelValues(s.Id)
-
-	for {
-		delta := (rand.Float64() - 0.5)
-		s.Current += delta
-		tempGauge.Set(s.Current)
-		counter.Inc()
-		time.Sleep(2 * time.Second)
-	}
-}
 
 func (app *App) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]string{
@@ -128,11 +81,6 @@ func main() {
 	app := &App{
         GitCommit: Version, 
         Templates: template.Must(template.ParseFiles("index.html")),
-    }
-	
-	for i := 1; i <= 10; i++ {
-		sensor := NewSensor(i)
-		go sensor.Run()
 	}
 
 	slog.Info("Starting Cloudmetrics App", "version", app.GitCommit)
