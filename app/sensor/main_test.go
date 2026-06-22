@@ -10,11 +10,16 @@ import (
 
 func TestNewSensor(t *testing.T) {
 	expectedId := 42
+    expectedUrl := "localhost"
 
-	sensor := NewSensor(42, "localhost")
+	sensor := NewSensor(42, expectedUrl)
 	if sensor.Id != expectedId {
 		t.Errorf("Expected sensor id %v, got %v",
 			expectedId, sensor.Id)
+		}
+    if sensor.TargetURL != expectedUrl {
+        t.Errorf("Expected target url %s, got %s",
+			expectedUrl, sensor.TargetURL)
 		}
 }
 
