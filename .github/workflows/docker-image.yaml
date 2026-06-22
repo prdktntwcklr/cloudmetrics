@@ -35,11 +35,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - service: api
-            context: ./app/api
+          - context: ./app/api
             image_name: cloudmetrics-app
-          - service: sensor
-            context: ./app/sensor
+          - context: ./app/sensor
             image_name: cloudmetrics-sensor
     env:
       GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -65,7 +63,7 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: false
           load: true
-          tags: cloudmetrics-${{ matrix.service }}:smoke-test
+          tags: ${{ matrix.image_name }}:local
           build-args: |
             GIT_SHA=${{ env.GIT_SHA }}
 
