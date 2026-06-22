@@ -12,6 +12,9 @@ import (
 	"time"
 )
 
+// Injected from the Dockerfile
+var Version = "unknown"
+
 type HTTPClient interface {
     Post(url, contentType string, body io.Reader) (resp *http.Response, err error)
 }
@@ -92,9 +95,12 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, opts))
 	slog.SetDefault(logger)
 
-	apiURL := "http://localhost:8081/api/readings"
+    apiURL := os.Getenv("API_URL")
+    if apiURL == "" {
+        apiURL = "http://localhost:8080/api/readings"
+    }
 
-	slog.Info("Starting Cloudmetrics Sensors", "target_api", apiURL)
+	slog.Info("Starting Cloudmetrics Sensors", "target_api", apiURL, "version", Version)
 
 	for i := 1; i <= 10; i++ {
 		sensor := NewSensor(i, apiURL)

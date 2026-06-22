@@ -24,5 +24,4 @@ RUN : "${GIT_SHA:?ERROR: GIT_SHA build argument is required!}" && \
 FROM alpine:3.22.4  
 WORKDIR /root
 COPY --from=builder /workdir/app/main .
-EXPOSE 8080
 CMD ["./main"]
