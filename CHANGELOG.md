@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.4.0...v1.5.0) (2026-06-23)
+
+
+### Features
+
+* add sensor deployment ([#48](https://github.com/prdktntwcklr/cloudmetrics/issues/48)) ([78f5960](https://github.com/prdktntwcklr/cloudmetrics/commit/78f596005a97fb5e3895375d25a01b86a68f2b0d))
+* split into two separate services ([#45](https://github.com/prdktntwcklr/cloudmetrics/issues/45)) ([f9fd251](https://github.com/prdktntwcklr/cloudmetrics/commit/f9fd2517cea7d95a27de55d395ef72c3930fe382))
+
+
+### Bug Fixes
+
+* use raw ids for metrics ([#47](https://github.com/prdktntwcklr/cloudmetrics/issues/47)) ([84e0c28](https://github.com/prdktntwcklr/cloudmetrics/commit/84e0c2846bcf41dc0facffb1afd0bdb93888b16d))
+
 ## [1.4.0](https://github.com/prdktntwcklr/cloudmetrics/compare/v1.3.0...v1.4.0) (2026-06-17)
 
 
