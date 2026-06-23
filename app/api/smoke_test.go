@@ -18,7 +18,7 @@ func TestHealthzSmoke(t *testing.T) {
 	ctx := context.Background()
 
 	req := testcontainers.ContainerRequest{
-		Image:        "cloudmetrics:local",
+		Image:        "cloudmetrics-app:local",
 		ExposedPorts: []string{"8080/tcp"},
 		WaitingFor: wait.ForHTTP("/healthz").
 			WithPort("8080/tcp").
@@ -49,7 +49,7 @@ func TestIngestReadingSmoke(t *testing.T) {
 	ctx := context.Background()
 
 	req := testcontainers.ContainerRequest{
-		Image:        "cloudmetrics:local",
+		Image:        "cloudmetrics-app:local",
 		ExposedPorts: []string{"8080/tcp"},
 		WaitingFor: wait.ForHTTP("/healthz").
 			WithPort("8080/tcp").
