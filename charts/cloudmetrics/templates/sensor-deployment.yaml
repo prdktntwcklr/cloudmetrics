@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-sensor
+  labels:
+    app: {{ .Release.Name }}-sensor
+spec:
+  replicas: {{ .Values.sensor.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-sensor
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-sensor
+    spec:
+      containers:
+        - name: sensor-service
+          image: "{{ .Values.sensor.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.sensor.image.pullPolicy | default "Always" }}
+          resources:
+            {{- toYaml .Values.sensor.resources | nindent 12 }}
