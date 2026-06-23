@@ -20,3 +20,6 @@ spec:
           imagePullPolicy: {{ .Values.sensor.image.pullPolicy | default "Always" }}
           resources:
             {{- toYaml .Values.sensor.resources | nindent 12 }}
+          env:
+            - name: API_URL
+              value: "http://{{ .Release.Name }}-api:8080"
