@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -17,8 +18,13 @@ import (
 func TestHealthzSmoke(t *testing.T) {
 	ctx := context.Background()
 
+	imageName := os.Getenv("TEST_IMAGE_NAME")
+	if imageName == "" {
+		t.Fatalf("Smoke test failed: TEST_IMAGE_NAME environment variable is not set.")
+	}
+
 	req := testcontainers.ContainerRequest{
-		Image:        "cloudmetrics:smoke-test",
+		Image:        imageName,
 		ExposedPorts: []string{"8080/tcp"},
 		WaitingFor: wait.ForHTTP("/healthz").
 			WithPort("8080/tcp").
@@ -48,8 +54,13 @@ func TestHealthzSmoke(t *testing.T) {
 func TestIngestReadingSmoke(t *testing.T) {
 	ctx := context.Background()
 
+	imageName := os.Getenv("TEST_IMAGE_NAME")
+	if imageName == "" {
+		t.Fatalf("Smoke test failed: TEST_IMAGE_NAME environment variable is not set.")
+	}
+
 	req := testcontainers.ContainerRequest{
-		Image:        "cloudmetrics:smoke-test",
+		Image:        imageName,
 		ExposedPorts: []string{"8080/tcp"},
 		WaitingFor: wait.ForHTTP("/healthz").
 			WithPort("8080/tcp").

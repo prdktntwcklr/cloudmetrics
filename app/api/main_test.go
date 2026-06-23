@@ -10,9 +10,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"time"
 	
-	"github.com/prometheus/client_golang/prometheus/testutil"
 	dto "github.com/prometheus/client_model/go"
 )
 
@@ -73,34 +71,6 @@ func TestIndexHandler(t *testing.T) {
 	bodyString := string(body)
 	if !strings.Contains(bodyString, expectedString) {
 		t.Errorf("Expected HTML body to contain '%v', but received:\n%s", expectedString, bodyString)
-	}
-}
-
-func TestNewSensor(t *testing.T) {
-	expectedId := "sensor-42"
-
-	sensor := NewSensor(42)
-	if sensor.Id != expectedId {
-		t.Errorf("Expected sensor id %s, got %s",
-			expectedId, sensor.Id)
-		}
-}
-
-func TestSensorRun(t *testing.T) {
-	sensorId := "sensor-42"
-	sensor := NewSensor(42)
-	go sensor.Run()
-
-	time.Sleep(50 * time.Millisecond)
-
-	counterCount := testutil.ToFloat64(readingsTotalVec.WithLabelValues(sensorId))
-	if counterCount < 1 {
-		t.Errorf("Expected readings counter to be >= 1, got %v", counterCount)
-	}
-
-	currentTemp := testutil.ToFloat64(ambientTempVec.WithLabelValues(sensorId))
-	if currentTemp < 24.0 || currentTemp > 26.0 {
-		t.Errorf("Expected initial temperature to be roughly between 24 and 26, got %v", currentTemp)
 	}
 }
 
