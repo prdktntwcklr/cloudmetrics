@@ -60,15 +60,15 @@ jobs:
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
           context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
+          file: ${{ matrix.context }}/Dockerfile
           push: false
           load: true
           tags: ${{ matrix.image_name }}:local
           build-args: |
             GIT_SHA=${{ env.GIT_SHA }}
 
-      - name: Run smoke tests (only for api image)
-        if: matrix.service == 'api'
+      - name: Run smoke tests (only for cloudmetrics-app image)
+        if: matrix.image_name == 'cloudmetrics-app'
         working-directory: ${{ matrix.context }}
         run: go test -v -tags=smoke ./...
 
@@ -100,7 +100,7 @@ jobs:
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
           context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
+          file: ${{ matrix.context }}/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -109,14 +109,14 @@ jobs:
 
       - name: Run Update Version Script on Chart.yaml
         id: update_chart
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && matrix.service == 'api'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && matrix.image_name == 'cloudmetrics-app'
         run: |
           chmod +x ./.github/workflows/scripts/update-version.sh
           NEW_VERSION=$(./.github/workflows/scripts/update-version.sh "${{ needs.release-please.outputs.tag_name }}" "${{ env.GIT_SHA }}")
           echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Commit and Push Changes to trigger ArgoCD deployment
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && matrix.service == 'api'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && matrix.image_name == 'cloudmetrics-app'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
