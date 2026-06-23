@@ -1,5 +1,25 @@
-replicaCount: 2
+api:
+  replicaCount: 2
+  image:
+    repository: ghcr.io/prdktntwcklr/cloudmetrics/cloudmetrics-app
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
 
-image:
-  repository: ghcr.io/prdktntwcklr/cloudmetrics/cloudmetrics-app
-  pullPolicy: IfNotPresent
+sensor:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/prdktntwcklr/cloudmetrics/cloudmetrics-sensor
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "128Mi"
+    limits:
+      cpu: "400m"
+      memory: "256Mi"

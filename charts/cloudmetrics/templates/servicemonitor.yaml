@@ -1,14 +1,14 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ .Release.Name }}-monitoring
+  name: {{ .Release.Name }}-api-monitoring
   labels:
     # This label must match your Prometheus installation's selector
     release: {{ .Values.prometheusReleaseName | default "prometheus" }}
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
+      app: {{ .Release.Name }}-api
   endpoints:
     - port: app-metrics
       interval: 15s
