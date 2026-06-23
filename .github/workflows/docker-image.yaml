@@ -70,7 +70,7 @@ jobs:
       - name: Run smoke tests (only for cloudmetrics-app image)
         if: matrix.image_name == 'cloudmetrics-app'
         working-directory: ${{ matrix.context }}
-        run: go test -v -tags=smoke ./...
+        run: TEST_IMAGE_NAME="cloudmetrics-app:local" go test -v -tags=smoke ./...
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
