@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"io"
 	"net/http"
@@ -78,7 +77,7 @@ func TestIngestReadingHandler_Success(t *testing.T) {
 	app := &App{}
 
 	sensorID := 5
-	sensorStr := fmt.Sprintf("sensor_%d", sensorID)
+	sensorStr := "5"
 	expectedTemp := 24.5
 
 	reading := Reading{
