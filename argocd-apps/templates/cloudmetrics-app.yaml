@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/prdktntwcklr/cloudmetrics'
     # TODO: Change to a specific release for production
-    targetRevision: refs/heads/main
+    targetRevision: refs/heads/deploy-sensor
     path: charts/cloudmetrics
     helm:
       valueFiles:
