@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -58,7 +58,7 @@ func (app *App) IngestReadingHandler(w http.ResponseWriter, r *http.Request) {
 
 	slog.Info("Received reading", "sensor_id", rdr.SensorID, "temp", rdr.Temperature)
 
-	sensorStr := fmt.Sprintf("sensor_%d", rdr.SensorID)
+	sensorStr := strconv.Itoa(rdr.SensorID)
 	ambientTempVec.WithLabelValues(sensorStr).Set(rdr.Temperature)
 	readingsTotalVec.WithLabelValues(sensorStr).Inc()
 
