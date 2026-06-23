@@ -22,4 +22,4 @@ spec:
             {{- toYaml .Values.sensor.resources | nindent 12 }}
           env:
             - name: API_URL
-              value: "http://{{ .Release.Name }}-api-service:8080"
+              value: "http://{{ .Release.Name }}-api-service:8080/api/readings"
